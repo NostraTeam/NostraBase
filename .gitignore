@@ -1,0 +1,12 @@
+# IDE directories
+/.vs
+/.vscode
+/.cproject
+/.project
+/.idea
+
+# Visual Studio CMake configuration file
+CMakeSettings.json
+
+# default build directory (lower and upper case writing are accepted)
+/[Bb]uild
