@@ -251,92 +251,98 @@ void test_constexpr()
 
     // Constructor for all components
     {
-        nba::version version{1, 2, 3, 4};
+        constexpr nba::version version{1, 2, 3, 4};
 
-        std::uint64_t manual_raw{0};
-        manual_raw += std::uint64_t{1} << NBA_TEST_MAJOR_SHIFT_VALUE;
-        manual_raw += std::uint64_t{2} << NBA_TEST_MINOR_SHIFT_VALUE;
-        manual_raw += std::uint64_t{3} << NBA_TEST_PATCH_SHIFT_VALUE;
-        manual_raw += std::uint64_t{4} << NBA_TEST_TWEAK_SHIFT_VALUE;
+        constexpr std::uint64_t manual_raw{(std::uint64_t{1} << NBA_TEST_MAJOR_SHIFT_VALUE) +
+                                           (std::uint64_t{2} << NBA_TEST_MINOR_SHIFT_VALUE) +
+                                           (std::uint64_t{3} << NBA_TEST_PATCH_SHIFT_VALUE) +
+                                           (std::uint64_t{4} << NBA_TEST_TWEAK_SHIFT_VALUE)};
 
-        NBA_ASSERT(version.get_raw() == manual_raw);
-        NBA_ASSERT(version.get_major() == 1);
-        NBA_ASSERT(version.get_minor() == 2);
-        NBA_ASSERT(version.get_patch() == 3);
-        NBA_ASSERT(version.get_tweak() == 4);
+        static_assert(version.get_raw() == manual_raw);
+        static_assert(version.get_major() == 1);
+        static_assert(version.get_minor() == 2);
+        static_assert(version.get_patch() == 3);
+        static_assert(version.get_tweak() == 4);
 
-        NBA_ASSERT(nba::version{version.get_raw()}.get_raw() == nba::version{1, 2, 3, 4}.get_raw());
+        static_assert(nba::version{version.get_raw()}.get_raw() == nba::version{1, 2, 3, 4}.get_raw());
     }
 
     // Raw constructor
     {
-        nba::version version{static_cast<std::uint64_t>(1234)};
+        constexpr nba::version version{std::uint64_t{1234}};
 
-        NBA_ASSERT(version.get_raw() == 1234);
+        static_assert(version.get_raw() == 1234);
     }
 
     // get_masked()
     {
-        nba::version version{1, 2, 3, 4};
+        constexpr nba::version version{1, 2, 3, 4};
 
-        std::uint64_t major = version.get_masked(nba::version::mask::MAJOR);
-        std::uint64_t minor = version.get_masked(nba::version::mask::MINOR);
-        std::uint64_t patch = version.get_masked(nba::version::mask::PATCH);
-        std::uint64_t tweak = version.get_masked(nba::version::mask::TWEAK);
-        std::uint64_t all   = version.get_masked(nba::version::mask::ALL);
+        constexpr std::uint64_t major = version.get_masked(nba::version::mask::MAJOR);
+        constexpr std::uint64_t minor = version.get_masked(nba::version::mask::MINOR);
+        constexpr std::uint64_t patch = version.get_masked(nba::version::mask::PATCH);
+        constexpr std::uint64_t tweak = version.get_masked(nba::version::mask::TWEAK);
+        constexpr std::uint64_t all   = version.get_masked(nba::version::mask::ALL);
 
-        NBA_ASSERT(major == NBA_TEST_SHIFT_MAJOR(1));
-        NBA_ASSERT(minor == NBA_TEST_SHIFT_MINOR(2));
-        NBA_ASSERT(patch == NBA_TEST_SHIFT_PATCH(3));
-        NBA_ASSERT(tweak == NBA_TEST_SHIFT_TWEAK(4));
-        NBA_ASSERT(all == version.get_raw());
+        static_assert(major == NBA_TEST_SHIFT_MAJOR(1));
+        static_assert(minor == NBA_TEST_SHIFT_MINOR(2));
+        static_assert(patch == NBA_TEST_SHIFT_PATCH(3));
+        static_assert(tweak == NBA_TEST_SHIFT_TWEAK(4));
+        static_assert(all == version.get_raw());
 
-        std::uint64_t major_minor = version.get_masked(nba::version::mask::MAJOR | nba::version::mask::MINOR);
-        std::uint64_t major_patch = version.get_masked(nba::version::mask::MAJOR | nba::version::mask::PATCH);
-        std::uint64_t major_tweak = version.get_masked(nba::version::mask::MAJOR | nba::version::mask::TWEAK);
+        constexpr std::uint64_t major_minor =
+            version.get_masked(nba::version::mask::MAJOR | nba::version::mask::MINOR);
+        constexpr std::uint64_t major_patch =
+            version.get_masked(nba::version::mask::MAJOR | nba::version::mask::PATCH);
+        constexpr std::uint64_t major_tweak =
+            version.get_masked(nba::version::mask::MAJOR | nba::version::mask::TWEAK);
 
-        NBA_ASSERT(major_minor == NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_MINOR(2));
-        NBA_ASSERT(major_patch == NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_PATCH(3));
-        NBA_ASSERT(major_tweak == NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_TWEAK(4));
+        static_assert(major_minor == NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_MINOR(2));
+        static_assert(major_patch == NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_PATCH(3));
+        static_assert(major_tweak == NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_TWEAK(4));
 
-        std::uint64_t minor_patch = version.get_masked(nba::version::mask::MINOR | nba::version::mask::PATCH);
-        std::uint64_t minor_tweak = version.get_masked(nba::version::mask::MINOR | nba::version::mask::TWEAK);
+        constexpr std::uint64_t minor_patch =
+            version.get_masked(nba::version::mask::MINOR | nba::version::mask::PATCH);
+        constexpr std::uint64_t minor_tweak =
+            version.get_masked(nba::version::mask::MINOR | nba::version::mask::TWEAK);
 
-        NBA_ASSERT(minor_patch == NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_PATCH(3));
-        NBA_ASSERT(minor_tweak == NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_TWEAK(4));
+        static_assert(minor_patch == NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_PATCH(3));
+        static_assert(minor_tweak == NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_TWEAK(4));
 
-        std::uint64_t patch_tweak = version.get_masked(nba::version::mask::PATCH | nba::version::mask::TWEAK);
+        constexpr std::uint64_t patch_tweak =
+            version.get_masked(nba::version::mask::PATCH | nba::version::mask::TWEAK);
 
-        NBA_ASSERT(patch_tweak == NBA_TEST_SHIFT_PATCH(3) + NBA_TEST_SHIFT_TWEAK(4));
+        static_assert(patch_tweak == NBA_TEST_SHIFT_PATCH(3) + NBA_TEST_SHIFT_TWEAK(4));
 
-        std::uint64_t major_minor_patch = version.get_masked(
+        constexpr std::uint64_t major_minor_patch = version.get_masked(
             nba::version::mask::MAJOR | nba::version::mask::MINOR | nba::version::mask::PATCH);
-        std::uint64_t major_patch_tweak = version.get_masked(
+        constexpr std::uint64_t major_patch_tweak = version.get_masked(
             nba::version::mask::MAJOR | nba::version::mask::PATCH | nba::version::mask::TWEAK);
-        std::uint64_t major_minor_tweak = version.get_masked(
+        constexpr std::uint64_t major_minor_tweak = version.get_masked(
             nba::version::mask::MAJOR | nba::version::mask::MINOR | nba::version::mask::TWEAK);
 
-        NBA_ASSERT(major_minor_patch ==
+        static_assert(major_minor_patch ==
                    NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_PATCH(3));
-        NBA_ASSERT(major_patch_tweak ==
+        static_assert(major_patch_tweak ==
                    NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_PATCH(3) + NBA_TEST_SHIFT_TWEAK(4));
-        NBA_ASSERT(major_minor_tweak ==
+        static_assert(major_minor_tweak ==
                    NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_TWEAK(4));
 
-        std::uint64_t minor_patch_tweak = version.get_masked(
+        constexpr std::uint64_t minor_patch_tweak = version.get_masked(
             nba::version::mask::MINOR | nba::version::mask::PATCH | nba::version::mask::TWEAK);
 
-        NBA_ASSERT(minor_patch_tweak ==
+        static_assert(minor_patch_tweak ==
                    NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_PATCH(3) + NBA_TEST_SHIFT_TWEAK(4));
 
-        std::uint64_t all2 = version.get_masked(nba::version::mask::MAJOR | nba::version::mask::MINOR |
+        constexpr std::uint64_t all2 =
+            version.get_masked(nba::version::mask::MAJOR | nba::version::mask::MINOR |
                                                 nba::version::mask::PATCH | nba::version::mask::TWEAK);
 
-        NBA_ASSERT(all2 == NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_PATCH(3) +
+        static_assert(all2 == NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_PATCH(3) +
                                NBA_TEST_SHIFT_TWEAK(4));
 
         // should indirectly be covered by the previous tests, but better safe than sorry...
-        NBA_ASSERT(all2 == version.get_masked(nba::version::mask::ALL));
+        static_assert(all2 == version.get_masked(nba::version::mask::ALL));
     }
 }
 
