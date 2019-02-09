@@ -10,7 +10,7 @@ namespace nba
     class version final
     {
     private:
-            std::uint64_t m_raw;
+        std::uint64_t m_raw;
 
         using mask_underlying_type = std::uint64_t;
 
@@ -51,6 +51,21 @@ namespace nba
         inline void set_patch(std::uint16_t patch) noexcept;
         inline void set_tweak(std::uint16_t tweak) noexcept;
         inline void set_raw(std::uint64_t raw) noexcept;
+
+        constexpr version operator+(const version& other) const;
+        inline version& operator+=(const version& other);
+
+        constexpr version operator-(const version& other) const;
+        inline version& operator-=(const version& other);
+
+        constexpr bool operator==(const version& other) const;
+        constexpr bool operator!=(const version& other) const;
+
+        constexpr bool operator<(const version& other) const;
+        constexpr bool operator>(const version& other) const;
+
+        constexpr bool operator<=(const version& other) const;
+        constexpr bool operator>=(const version& other) const;
     };
 
     constexpr version::version(std::uint16_t major,
@@ -116,6 +131,68 @@ namespace nba
     void version::set_raw(std::uint64_t raw) noexcept
     {
         m_raw = raw;
+    }
+
+    constexpr version version::operator+(const version& other) const
+    {
+        return version{get_major() + other.get_major(), get_minor() + other.get_minor(),
+                       get_patch() + other.get_patch(), get_tweak() + other.get_tweak()};
+    }
+
+    version& version::operator+=(const version& other)
+    {
+        set_major(get_major() + other.get_major());
+        set_minor(get_minor() + other.get_minor());
+        set_patch(get_patch() + other.get_patch());
+        set_tweak(get_tweak() + other.get_tweak());
+
+        return *this;
+    }
+
+    constexpr version version::operator-(const version& other) const
+    {
+        return version{get_major() - other.get_major(), get_minor() - other.get_minor(),
+                       get_patch() - other.get_patch(), get_tweak() - other.get_tweak()};
+    }
+
+    version& version::operator-=(const version& other)
+    {
+        set_major(get_major() - other.get_major());
+        set_minor(get_minor() - other.get_minor());
+        set_patch(get_patch() - other.get_patch());
+        set_tweak(get_tweak() - other.get_tweak());
+
+        return *this;
+    }
+
+    constexpr bool version::operator==(const version& other) const
+    {
+        return get_raw() == other.get_raw();
+    }
+
+    constexpr bool version::operator!=(const version& other) const
+    {
+        return get_raw() != other.get_raw();
+    }
+
+    constexpr bool version::operator<(const version& other) const
+    {
+        return get_raw() < other.get_raw();
+    }
+
+    constexpr bool version::operator>(const version& other) const
+    {
+        return get_raw() > other.get_raw();
+    }
+
+    constexpr bool version::operator<=(const version& other) const
+    {
+        return get_raw() <= other.get_raw();
+    }
+
+    constexpr bool version::operator>=(const version& other) const
+    {
+        return get_raw() >= other.get_raw();
     }
 
 } // namespace nba

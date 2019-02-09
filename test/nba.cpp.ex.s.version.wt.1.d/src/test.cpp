@@ -234,6 +234,27 @@ void test_normal()
         NBA_ASSERT(version.get_patch() == 23);
         NBA_ASSERT(version.get_tweak() == 24);
     }
+
+    {
+        nba::version version{1, 2, 3, 4};
+        nba::version version2{2, 3, 4, 5};
+        nba::version version3{0, 2, 3, 4};
+        nba::version version4{1, 2, 3, 4};
+
+        NBA_ASSERT(version < version2);
+        NBA_ASSERT(version <= version2);
+        NBA_ASSERT(version2 > version);
+        NBA_ASSERT(version2 >= version);
+        NBA_ASSERT(version != version2);
+
+        NBA_ASSERT(version3 <= version);
+        NBA_ASSERT(version >= version3);
+        NBA_ASSERT(version != version3);
+
+        NBA_ASSERT(version == version4);
+        NBA_ASSERT(version >= version4);
+        NBA_ASSERT(version <= version4);
+    }
 }
 
 void test_constexpr()
@@ -322,27 +343,48 @@ void test_constexpr()
             nba::version::mask::MAJOR | nba::version::mask::MINOR | nba::version::mask::TWEAK);
 
         static_assert(major_minor_patch ==
-                   NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_PATCH(3));
+                      NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_PATCH(3));
         static_assert(major_patch_tweak ==
-                   NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_PATCH(3) + NBA_TEST_SHIFT_TWEAK(4));
+                      NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_PATCH(3) + NBA_TEST_SHIFT_TWEAK(4));
         static_assert(major_minor_tweak ==
-                   NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_TWEAK(4));
+                      NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_TWEAK(4));
 
         constexpr std::uint64_t minor_patch_tweak = version.get_masked(
             nba::version::mask::MINOR | nba::version::mask::PATCH | nba::version::mask::TWEAK);
 
         static_assert(minor_patch_tweak ==
-                   NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_PATCH(3) + NBA_TEST_SHIFT_TWEAK(4));
+                      NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_PATCH(3) + NBA_TEST_SHIFT_TWEAK(4));
 
         constexpr std::uint64_t all2 =
             version.get_masked(nba::version::mask::MAJOR | nba::version::mask::MINOR |
-                                                nba::version::mask::PATCH | nba::version::mask::TWEAK);
+                               nba::version::mask::PATCH | nba::version::mask::TWEAK);
 
         static_assert(all2 == NBA_TEST_SHIFT_MAJOR(1) + NBA_TEST_SHIFT_MINOR(2) + NBA_TEST_SHIFT_PATCH(3) +
-                               NBA_TEST_SHIFT_TWEAK(4));
+                                  NBA_TEST_SHIFT_TWEAK(4));
 
         // should indirectly be covered by the previous tests, but better safe than sorry...
         static_assert(all2 == version.get_masked(nba::version::mask::ALL));
+    }
+
+    {
+        constexpr nba::version version{1, 2, 3, 4};
+        constexpr nba::version version2{2, 3, 4, 5};
+        constexpr nba::version version3{0, 2, 3, 4};
+        constexpr nba::version version4{1, 2, 3, 4};
+
+        static_assert(version < version2);
+        static_assert(version <= version2);
+        static_assert(version2 > version);
+        static_assert(version2 >= version);
+        static_assert(version != version2);
+
+        static_assert(version3 <= version);
+        static_assert(version >= version3);
+        static_assert(version != version3);
+
+        static_assert(version == version4);
+        static_assert(version >= version4);
+        static_assert(version <= version4);
     }
 }
 
