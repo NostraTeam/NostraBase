@@ -1,8 +1,10 @@
+#include "nostra/base/version.h"
 #include "nostra/base/version.hpp"
 
 #include <bitset>
 #include <cstdint>
 #include <iostream>
+#include <limits>
 
 // TODO: use proper unit test framework
 #define NBA_ASSERT(...)                                                                            \
@@ -21,6 +23,91 @@
 #define NBA_TEST_SHIFT_MINOR(minor) (std::uint64_t{minor} << NBA_TEST_MINOR_SHIFT_VALUE)
 #define NBA_TEST_SHIFT_PATCH(patch) (std::uint64_t{patch} << NBA_TEST_PATCH_SHIFT_VALUE)
 #define NBA_TEST_SHIFT_TWEAK(tweak) (std::uint64_t{tweak} << NBA_TEST_TWEAK_SHIFT_VALUE)
+
+void test_macros()
+{
+    {
+        std::uint64_t version = NBA_MAKE_VERSION(1, 2, 3, 4);
+
+        std::uint16_t major = NBA_VERSION_GET_MAJOR(version);
+        std::uint16_t minor = NBA_VERSION_GET_MINOR(version);
+        std::uint16_t patch = NBA_VERSION_GET_PATCH(version);
+        std::uint16_t tweak = NBA_VERSION_GET_TWEAK(version);
+
+        NBA_ASSERT(major == 1);
+        NBA_ASSERT(minor == 2);
+        NBA_ASSERT(patch == 3);
+        NBA_ASSERT(tweak == 4);
+    }
+
+    {
+        std::uint64_t version = NBA_MAKE_VERSION(
+            std::numeric_limits<std::uint16_t>::max(), std::numeric_limits<std::uint16_t>::max(),
+            std::numeric_limits<std::uint16_t>::max(), std::numeric_limits<std::uint16_t>::max());
+
+        std::uint16_t major = NBA_VERSION_GET_MAJOR(version);
+        std::uint16_t minor = NBA_VERSION_GET_MINOR(version);
+        std::uint16_t patch = NBA_VERSION_GET_PATCH(version);
+        std::uint16_t tweak = NBA_VERSION_GET_TWEAK(version);
+
+        NBA_ASSERT(major == std::numeric_limits<std::uint16_t>::max());
+        NBA_ASSERT(minor == std::numeric_limits<std::uint16_t>::max());
+        NBA_ASSERT(patch == std::numeric_limits<std::uint16_t>::max());
+        NBA_ASSERT(tweak == std::numeric_limits<std::uint16_t>::max());
+    }
+
+    {
+        std::uint64_t version = NBA_MAKE_VERSION(1, 2, 3, 4);
+
+        NBA_VERSION_SET_MAJOR(version, 11);
+        NBA_VERSION_SET_MINOR(version, 12);
+        NBA_VERSION_SET_PATCH(version, 13);
+        NBA_VERSION_SET_TWEAK(version, 14);
+
+        std::uint16_t major = NBA_VERSION_GET_MAJOR(version);
+        std::uint16_t minor = NBA_VERSION_GET_MINOR(version);
+        std::uint16_t patch = NBA_VERSION_GET_PATCH(version);
+        std::uint16_t tweak = NBA_VERSION_GET_TWEAK(version);
+
+        NBA_ASSERT(major == 11);
+        NBA_ASSERT(minor == 12);
+        NBA_ASSERT(patch == 13);
+        NBA_ASSERT(tweak == 14);
+    }
+
+    {
+        std::uint64_t version = NBA_MAKE_VERSION(1, 2, 3, 4);
+
+        NBA_VERSION_SET_MAJOR(version, std::numeric_limits<std::uint16_t>::max());
+        NBA_VERSION_SET_MINOR(version, std::numeric_limits<std::uint16_t>::max());
+        NBA_VERSION_SET_PATCH(version, std::numeric_limits<std::uint16_t>::max());
+        NBA_VERSION_SET_TWEAK(version, std::numeric_limits<std::uint16_t>::max());
+
+        std::uint16_t major = NBA_VERSION_GET_MAJOR(version);
+        std::uint16_t minor = NBA_VERSION_GET_MINOR(version);
+        std::uint16_t patch = NBA_VERSION_GET_PATCH(version);
+        std::uint16_t tweak = NBA_VERSION_GET_TWEAK(version);
+
+        NBA_ASSERT(major == std::numeric_limits<std::uint16_t>::max());
+        NBA_ASSERT(minor == std::numeric_limits<std::uint16_t>::max());
+        NBA_ASSERT(patch == std::numeric_limits<std::uint16_t>::max());
+        NBA_ASSERT(tweak == std::numeric_limits<std::uint16_t>::max());
+    }
+
+    {
+        std::uint64_t version  = NBA_MAKE_VERSION(1, 2, 3, 4);
+        std::uint64_t version2 = NBA_MAKE_VERSION(2, 3, 4, 5);
+        std::uint64_t version3 = NBA_MAKE_VERSION(0, 2, 3, 4);
+
+        NBA_ASSERT(version < version2);
+        NBA_ASSERT(version2 > version);
+        NBA_ASSERT(version != version2);
+
+        NBA_ASSERT(version3 < version);
+        NBA_ASSERT(version > version3);
+        NBA_ASSERT(version != version3);
+    }
+}
 
 void test_normal()
 {
@@ -255,6 +342,7 @@ void test_constexpr()
 
 int main()
 {
+    test_macros();
     test_normal();
     test_constexpr();
 }
